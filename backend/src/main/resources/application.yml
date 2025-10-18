@@ -1,0 +1,16 @@
+spring:
+  profiles:
+    active: dev
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+minio:
+  endpoint: http://47.122.130.122:9000
+  accessKey: wenxin
+  secretKey: wenxin1114
+  bucket: grocery
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+server:
+  port: 8081
