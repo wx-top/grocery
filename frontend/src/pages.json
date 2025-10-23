@@ -53,6 +53,12 @@
       "style": {
         "navigationBarTitleText": "商品计价"
       }
+    },
+    {
+      "path": "pages/search/index",
+      "style": {
+        "navigationBarTitleText": "商品搜索"
+      }
     }
   ],
   "globalStyle": {

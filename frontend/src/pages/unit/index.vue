@@ -62,7 +62,7 @@ const handleAction = async (type: number, id?: number) => {
 
 <style lang="scss" scoped>
 .management-container {
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background: #f5f5f5;

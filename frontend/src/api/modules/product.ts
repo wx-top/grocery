@@ -1,16 +1,5 @@
 import { request } from "@/utils/request";
 
-// interface ProductRequest extends BasePage {
-//     id?: number,
-//     name?: string,
-//     code?: string,
-//     price?: number,
-//     categoryId?: number,
-//     unitId?: number,
-//     description?: string,
-//     isActive?: boolean,
-// }
-
 type ProductRequest = Partial<Pick<Product, 'name' | 'code' | 'price' | 'categoryId' | 'unitId' | 'description' | 'isActive'>>
 
 export const fetchGetProductList = (data: ProductRequest & BasePage) => {

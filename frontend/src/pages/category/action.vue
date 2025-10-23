@@ -86,7 +86,7 @@ onLoad((option: any) => {
 
 <style lang="scss" scoped>
 .action-container {
-    height: 100%;
+    height: 100vh;
     background: #f5f5f5;
     .footer {
         padding: 12px;

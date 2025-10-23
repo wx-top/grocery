@@ -28,7 +28,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public R<Page<Product>> getList(ProductDTO dto) {
         log.info("查询商品参数：{}", dto);
         Page<Product> page = lambdaQuery()
-                .eq(StringUtils.isNotBlank(dto.getName()), Product::getName, dto.getName())
+                .like(StringUtils.isNotBlank(dto.getName()), Product::getName, dto.getName())
                 .eq(StringUtils.isNotBlank(dto.getCode()), Product::getCode, dto.getCode())
                 .eq(dto.getCategoryId() != null, Product::getCategoryId, dto.getCategoryId())
                 .orderByDesc(Product::getCreateAt)
@@ -37,16 +37,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         page.setRecords(page.getRecords().stream().peek(product -> product.setImageList(productImageService.getListByProductId(product.getId()))).toList());
         return R.ok(page);
     }
-
-//    @Override
-//    public R<Product> getProductById(Integer id) {
-//        Product product = getById(id);
-//        if (product != null) {
-//            product.setImageList(productImageService.getListByProductId(product.getId()));
-//            return R.ok(product);
-//        }
-//        return R.error(null,"商品不存在");
-//    }
 
     @Override
     public R<Product> getProductByIdOrCode(Integer id, String code) {
@@ -67,7 +57,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     @Transactional(rollbackFor = Exception.class)
     public R<String> addProduct(Product product) {
         // 查询商品编码是否已经存在
-        if (lambdaQuery().eq(Product::getCode, product.getCode()).exists()) {
+        if (StringUtils.isNotBlank(product.getCode()) && lambdaQuery().eq(Product::getCode, product.getCode()).exists()) {
             return R.error("商品编码已经存在");
         }
         save(product);
@@ -80,7 +70,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     @Transactional(rollbackFor = Exception.class)
     public R<String> updateProduct(Product product) {
         // 查询商品编码是否已经存在
-        if (lambdaQuery().eq(Product::getCode, product.getCode()).ne(Product::getId, product.getId()).exists()) {
+        if (StringUtils.isNotBlank(product.getCode()) && lambdaQuery().eq(Product::getCode, product.getCode()).and(wrapper -> wrapper.ne(Product::getId, product.getId())).exists()) {
             return R.error("商品编码已经存在");
         }
         updateById(product);

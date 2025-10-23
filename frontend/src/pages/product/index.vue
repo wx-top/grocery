@@ -12,7 +12,18 @@
           <wd-cell-group :title="item.name" border>
             <view class="product-item" @click="clickProduct(product.id)" v-for="(product, index) in item.items"
               :key="index">
-              <wd-img :width="60" :height="60" :src="product.imageList?.[0]?.url" mode="aspectFit">
+              <wd-img @tap.stop="previewImage(product)" v-if="product.imageList.length > 0" :width="60" :height="60"
+                :src="product.imageList?.[0]?.url" mode="aspectFit">
+                <template #error>
+                  <view class="error-wrap">加载失败</view>
+                </template>
+                <template #loading>
+                  <view class="loading-wrap">
+                    <wd-loading />
+                  </view>
+                </template>
+              </wd-img>
+              <wd-img v-else :width="60" :height="60" src="/static/notImg.png" mode="aspectFit">
                 <template #error>
                   <view class="error-wrap">加载失败</view>
                 </template>
@@ -33,7 +44,7 @@
               </view>
             </view>
           </wd-cell-group>
-          <wd-gap bg-color="#FFFFFF"></wd-gap>
+          <!-- <wd-gap bg-color="#FFFFFF"></wd-gap> -->
         </scroll-view>
       </view>
     </view>
@@ -78,12 +89,21 @@ const clickProduct = (id: number) => {
     url: `/pages/product/detail?id=${id}`
   });
 };
-function handleChange(e: { value: number }) {
-  active.value = e.value
+function handleChange({ value }: { value: number }) {
+  console.log('handleChange', value)
+  loadData()
   scrollTop.value = -1
   nextTick(() => {
     scrollTop.value = 0
   })
+}
+
+const previewImage = (item: Product) => {
+  uni.previewImage({
+    current: current.value,
+    urls: item.imageList.map((item: ProductImage) => item.url) || [],
+  })
+
 }
 
 const getProductList = async () => {
@@ -167,7 +187,7 @@ onShow(async () => {
 
 <style lang="scss" scoped>
 .product-container {
-  height: 100%;
+  height: 100vh;
   background: #f5f5f5;
   overflow: hidden;
 
@@ -176,7 +196,6 @@ onShow(async () => {
     height: calc(100vh - var(--window-top));
     height: calc(100vh - var(--window-top) - constant(safe-area-inset-bottom));
     height: calc(100vh - var(--window-top) - env(safe-area-inset-bottom));
-    overflow: hidden;
 
     .content {
       flex: 1;
@@ -186,7 +205,19 @@ onShow(async () => {
       .category {
         box-sizing: border-box;
         height: 100%;
-        padding-bottom: 50rpx;
+
+        .product-item {
+          padding: 20rpx;
+          display: flex;
+          gap: 20rpx;
+
+          .info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+          }
+        }
 
         .product-item {
           padding: 20rpx;

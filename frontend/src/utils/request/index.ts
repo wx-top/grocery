@@ -2,7 +2,7 @@
 // const base_url = 'http://192.168.43.34:8080'
 // const base_url = 'http://192.168.20.180:8080'
 const base_url = 'https://grocery.wenxin.icu'
-// const base_url = 'http://localhost:8080'
+// const base_url = 'http://localhost:8081'
 const upload_url = `${base_url}/minio/upload`
 
 // 请求超出时间
@@ -26,6 +26,7 @@ const request = <T = any>(params: RequestOptions): Promise<T> => {
     return new Promise<T>((resolve, reject) => {
         uni.showLoading({
             title: '加载中...',
+            
         })
         uni.request({
             url: base_url + url,

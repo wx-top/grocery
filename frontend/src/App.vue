@@ -17,7 +17,7 @@ onHide(() => {
 </script>
 <style lang="scss">
 page {
-  height: 100%;
+  // height: 100%;
   font-family: "San Francisco", Rotobo, arial, "PingFang SC", "Noto SansCJK", "Microsoft Yahei", sans-serif;
 }
 </style>

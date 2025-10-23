@@ -20,11 +20,11 @@ const tabbarList = [
     icon: "app",
     path: "/pages/product/index",
   },
-  {
-    title: "我的",
-    icon: "user",
-    path: "/pages/user/index",
-  },
+  // {
+  //   title: "我的",
+  //   icon: "user",
+  //   path: "/pages/user/index",
+  // },
 ];
 
 const handleChange = (e: { value: number }) => {

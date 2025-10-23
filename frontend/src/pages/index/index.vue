@@ -11,8 +11,14 @@
 
 <script setup lang="ts">
 import MyTabbar from "@/components/MyTabbar/MyTabbar.vue";
+import { useAppStore } from "@/store";
+import { storeToRefs } from "pinia";
+import { onShow } from "@dcloudio/uni-app";
 import { useToast } from "wot-design-uni"
 const toast = useToast()
+const appStore = useAppStore()
+const { tabbarIndex } = storeToRefs(appStore)
+
 
 interface GridItem {
   title: string;
@@ -45,6 +51,12 @@ const handleScanCodeSearch = (item: GridItem) => {
 }
 
 const itemList: GridItem[] = [
+  {
+    title: "商品搜索",
+    icon: "search",
+    path: "/pages/search/index",
+    linkType: "navigateTo",
+  },
   {
     title: "扫码搜索",
     icon: "scan",
@@ -99,11 +111,17 @@ const handleClick = (item: GridItem) => {
   }
 }
 
+onShow(() => {
+  if (tabbarIndex.value !== 0) {
+    tabbarIndex.value = 0
+  }
+})
+
 </script>
 
 <style lang="scss" scoped>
 .management-container {
-  height: 100%;
+  height: 100vh;
   background: #f5f5f5;
 }
 </style>

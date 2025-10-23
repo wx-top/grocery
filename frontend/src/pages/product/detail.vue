@@ -1,9 +1,9 @@
 <template>
   <view class="detail-container" v-if="product">
-    <wd-swiper :list="product.imageList?.map((item: ProductImage) => item.url) || []" v-model:current="current"
-      :indicator="{ type: 'fraction' }" indicatorPosition="bottom-right" @click="handleClick">
+    <wd-swiper :list="imageList" v-model:current="current" autoplay
+      :indicator="{ type: 'fraction' }" indicatorPosition="bottom-right">
       <template #default="{ item }">
-        <image style="height: 100%; width: 100%;" :src="item" mode="aspectFit" />
+        <image style="height: 100%; width: 100%;" :src="item" mode="aspectFit" @click="handleClick"/>
       </template>
     </wd-swiper>
     <view class="box">
@@ -30,11 +30,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { onLoad, onShow } from "@dcloudio/uni-app"
 import { useAppStore } from "@/store/modules/app";
 import { useToast } from "wot-design-uni"
 import { fetchDeleteProduct, fetchGetProduct } from "@/api"
+
 const id = ref<string>('')
 const code = ref<string>('')
 const toast = useToast()
@@ -43,6 +44,10 @@ const product = ref<Product>();
 const category = ref<Category>();
 const unit = ref<Unit>();
 const current = ref<number>(0);
+
+const imageList = computed(() => {
+  return product.value?.imageList.map((item: ProductImage) => item.url) || []
+})
 
 onLoad((option: any) => {
   if (option?.id) {
@@ -108,13 +113,16 @@ const handleAction = (type: number) => {
   }
 };
 
-const handleClick = (index: number) => {
-  console.log(index);
+const handleClick = () => {
+  uni.previewImage({
+    current: current.value,
+    urls: imageList.value,
+  })
 };
 </script>
 <style lang="scss" scoped>
 .detail-container {
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background: #f5f5f5;

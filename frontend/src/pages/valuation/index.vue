@@ -76,29 +76,7 @@ type ScanProduct = Product & {
     count: number
 }
 
-const products = ref<ScanProduct[]>([{
-    count: 1,
-    categoryId: 1,
-    code: "6970850770740",
-    createAt: "2025-10-16 23:04:27",
-    description: "",
-    id: 481,
-    imageList: [{
-        createAt: "2025-10-16 23:04:27",
-        fileName: "eig8enqnFGBqe782eac60210f38acd18e664d7969465.png",
-        id: 30,
-        name: "ea807f1e-f23f-4f6b-9f92-f7a3325ca295.png",
-        productId: 481,
-        sortOrder: 0,
-        updateAt: '',
-        url: "http://47.122.130.122:9000/grocery/ea807f1e-f23f-4f6b-9f92-f7a3325ca295.png"
-    }],
-    isActive: true,
-    name: "测试",
-    price: 1,
-    unitId: 1,
-    updateAt: "2025-10-16 23:04:27"
-}])
+const products = ref<ScanProduct[]>([])
 const showPopup = ref<boolean>(false)
 const scanProduct = ref<Product>()
 const current = ref<number>(0)
@@ -189,7 +167,7 @@ const handleScanCode = async (e: any) => {
 .valuation-container {
     padding: 20rpx;
     background: #f5f5f5;
-    height: 100%;
+    height: 100vh;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;

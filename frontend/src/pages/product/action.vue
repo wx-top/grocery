@@ -22,7 +22,6 @@
             </wd-cell-group>
             <view class="footer">
                 <wd-button type="primary" size="large" @click="handleSubmit" block>{{ title }}</wd-button>
-                <wd-button type="default" size="large" block>测试</wd-button>
             </view>
 
         </wd-form>
@@ -33,15 +32,14 @@
 
 <script setup lang="ts">
 import { upload_url } from "@/utils/request";
-
+import { useToast } from "wot-design-uni";
 import { reactive, ref } from "vue";
 import { useAppStore } from "@/store";
 import { onLoad } from "@dcloudio/uni-app";
-import { useToast } from "wot-design-uni";
 import { fetchAddProduct, fetchGetProduct, fetchUpdateProduct } from "@/api";
 import { storeToRefs } from "pinia";
 import type { UploadFileItem, UploadFormData, UploadMethod } from "wot-design-uni/components/wd-upload/types";
-
+const toast = useToast()
 const title = ref<string>('')
 const fileList = ref<UploadFileItem[]>([])
 const rules = {
@@ -52,8 +50,6 @@ const rules = {
 }
 const appStore = useAppStore()
 const { categoryList, unitList } = storeToRefs(appStore)
-
-const toast = useToast()
 const actionType = ref<number>(0)
 const product = ref<Product>()
 
@@ -110,7 +106,7 @@ const handleSubmit = async () => {
                 categoryId: Number(model.categoryId),
                 unitId: Number(model.unitId),
             })
-            toast.success('新增成功')
+            toast.success({ msg: '新增成功', duration: 2000 })
         } else if (actionType.value === 2) {
             // 修改
             await fetchUpdateProduct({
@@ -119,12 +115,15 @@ const handleSubmit = async () => {
                 categoryId: Number(model.categoryId),
                 unitId: Number(model.unitId),
             })
-            toast.success('修改成功')
+            toast.success({ msg: '修改成功', duration: 2000 })
         }
         appStore.setNeedRefreshProduct(true)
         setTimeout(() => {
             uni.navigateBack()
         }, 500)
+    }).catch((error: any) => {
+        console.log(error)
+        toast.error({ msg: error.msg || '操作失败', duration: 2000 })
     })
 }
 
@@ -165,11 +164,11 @@ const scanCode = async () => {
             console.log('条码类型：' + res.scanType);
             console.log('条码内容：' + res.result);
             model.code = res.result
-            toast.success('条码扫描成功')
+            toast.success({ msg: '条码扫描成功', duration: 2000 })
         },
         fail: function (res) {
             console.log('条码扫描失败：' + res.errMsg);
-            toast.error('条码扫描失败：' + res.errMsg)
+            toast.error({ msg: '条码扫描失败：' + res.errMsg, duration: 2000 })
         }
     });
 }
@@ -183,7 +182,11 @@ onLoad(async (option: any) => {
     });
     if (actionType.value === 2) {
         if (!id) {
-            toast.error('请选择要操作的商品')
+            uni.showToast({
+                title: '请选择要操作的商品',
+                icon: 'error',
+                duration: 2000
+            })
             setTimeout(() => {
                 uni.navigateBack()
             }, 500)
@@ -208,8 +211,9 @@ onLoad(async (option: any) => {
 
 <style lang="scss" scoped>
 .action-container {
-    height: 100%;
+    height: 100vh;
     background: #f5f5f5;
+
     .footer {
         padding: 12px;
     }
