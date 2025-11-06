@@ -1,7 +1,7 @@
 <template>
     <view class="action-container">
         <wd-form ref="form" :model="model">
-            <wd-cell-group v-if="actionType !== 0" border>
+            <wd-cell-group v-if="actionType !== 'view'" border>
                 <wd-input label="单位名称" label-width="100px" prop="name" clearable v-model="model.name"
                     placeholder="请输入单位名称" :rules="[{ required: true, message: '请填写单位名称' }]" />
                 <wd-textarea label="单位介绍" label-width="100px" type="textarea" v-model="model.description"
@@ -13,7 +13,7 @@
                 <wd-cell title="创建时间" :value="unit?.createAt || '暂无'" />
                 <wd-cell title="更新时间" :value="unit?.updateAt || '暂无'" />
             </wd-cell-group>
-            <view class="footer" v-if="actionType !== 0">
+            <view class="footer" v-if="actionType !== 'view'">
                 <wd-button type="primary" size="large" @click="handleSubmit" block>{{ title }}</wd-button>
             </view>
         </wd-form>
@@ -31,7 +31,8 @@ import { storeToRefs } from "pinia";
 const appStore = useAppStore()
 const { success: showSuccess } = useToast()
 const { unitList } = storeToRefs(appStore)
-const actionType = ref<number>(0)
+const id = ref<number | null>(null)
+const actionType = ref<string>('')
 const unit = ref<Unit>()
 const title = ref<string>('')
 type Model = Partial<Pick<Unit, 'name' | 'description'>>
@@ -46,11 +47,11 @@ const handleSubmit = async () => {
         if (!r.valid) {
             return
         }
-        if (actionType.value === 1) {
+        if (actionType.value === 'add') {
             // 新增
             await fetchAddUnit(model)
             showSuccess('新增成功')
-        } else if (actionType.value === 2) {
+        } else if (actionType.value === 'edit') {
             // 修改
             await fetchUpdateUnit({
                 id: unit.value!.id,
@@ -64,13 +65,12 @@ const handleSubmit = async () => {
             uni.navigateBack()
         }, 500)
     })
-
 }
 
-onLoad((option: any) => {
+onLoad(async (option: any) => {
     const { id, type } = option
-    actionType.value = Number(type)
-    title.value = actionType.value === 0 ? '查看单位' : (actionType.value === 1 ? '新增单位' : '修改单位') 
+    actionType.value = type
+    title.value = actionType.value === 'view' ? '查看单位' : (actionType.value === 'add' ? '新增单位' : '修改单位')
     uni.setNavigationBarTitle({
         title: title.value
     });

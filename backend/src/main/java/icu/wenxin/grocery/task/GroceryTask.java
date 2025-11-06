@@ -1,15 +1,10 @@
 package icu.wenxin.grocery.task;
 
-import icu.wenxin.grocery.domain.po.ProductImage;
-import icu.wenxin.grocery.service.ProductImageService;
-import icu.wenxin.grocery.utils.MinioUtils;
-import io.minio.messages.DeleteError;
+import icu.wenxin.grocery.business.service.ProductImageService;
+import icu.wenxin.grocery.minio.utils.MinioUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Slf4j
 @Component

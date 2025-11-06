@@ -1,8 +1,10 @@
 <template>
     <view class="search-container">
-        <wd-search v-model="value" @search="search" @clear="clear" @cancel="cancel" @change="change" />
-        <scroll-view class="product-list" scroll-y refresher-enabled scroll-with-animation :show-scrollbar="false"
-            :scroll-top="scrollTop" :throttle="false" @scrolltolower="handleScrollLower">
+        <view class="search-header">
+            <wd-search v-model="value" @search="search" @clear="clear" hide-cancel />
+        </view>
+        <scroll-view class="product-list" scroll-y scroll-with-animation :show-scrollbar="false"
+             @scrolltolower="handleScrollLower">
             <view class="product-item" @click="clickProduct(product.id)" v-for="(product, index) in products"
                 :key="index">
                 <wd-img v-if="product.imageList.length > 0" :width="60" :height="60" :src="product.imageList?.[0]?.url"
@@ -38,6 +40,7 @@
             </view>
         </scroll-view>
         <wd-toast />
+        <wd-gap safe-area-bottom height="0"></wd-gap>
     </view>
 </template>
 
@@ -48,7 +51,6 @@ import { fetchGetProductList } from "@/api";
 const toast = useToast()
 const products = ref<Product[]>([])
 const value = ref("");
-const scrollTop = ref<number>(0)
 const current = ref<number>(1)
 const size = ref<number>(10)
 const notMore = ref<boolean>(false)
@@ -66,8 +68,6 @@ const handleScrollLower = () => {
     console.log("handleScrollLower");
     getProductList()
 }
-
-
 
 const getProductList = async () => {
     if (isLoading.value) return
@@ -118,6 +118,10 @@ const getProductList = async () => {
 }
 
 const search = async () => {
+    if (value.value.trim() === "") {
+        toast.warning({ msg: '请输入搜索内容', duration: 2000 })
+        return
+    }
     console.log("search");
     current.value = 1
     notMore.value = false
@@ -127,35 +131,44 @@ const search = async () => {
 };
 
 const clear = () => {
-    console.log("clear");
-};
+    value.value = ""
+    products.value = []
+}
 
-const cancel = () => {
-    console.log("cancel");
-};
 
-const change = (val: string) => {
-    console.log("change", val);
-};
 
 </script>
 
 <style scoped lang="scss">
 .search-container {
-    padding: 20rpx;
+    height: 100vh;
     background: #f5f5f5;
-    height: 100%;
-    overflow: hidden;
+
+
+    .search-header {
+        width: 100%;
+        height: 120rpx;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 999;
+        background: #fff;
+        border-bottom: 1rpx solid #eee;
+    }
 
     .product-list {
-        box-sizing: border-box;
         height: 100%;
+        box-sizing: border-box;
+        padding: 0 20rpx;
+        margin-top: 120rpx;
 
         .product-item {
             padding: 20rpx;
+            margin-bottom: 20rpx;
             display: flex;
             gap: 20rpx;
             background: #fff;
+            border-radius: 12rpx;
 
             .info {
                 flex: 1;

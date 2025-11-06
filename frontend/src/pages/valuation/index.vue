@@ -8,7 +8,7 @@
         <wd-popup v-model="showPopup" v-if="scanProduct" custom-style="border-radius:32rpx; width: 600rpx;">
             <view class="popup-content">
                 <wd-swiper :list="scanProduct?.imageList?.map((item: ProductImage) => item.url) || []"
-                    v-model:current="current" :indicator="{ type: 'fraction' }" indicatorPosition="bottom-right">
+                    v-model:currentSwiper="currentSwiper" :indicator="{ type: 'fraction' }" indicatorPosition="bottom-right">
                     <template #default="{ item }">
                         <image style="height: 100%; width: 100%;" :src="item" mode="aspectFit" />
                     </template>
@@ -63,6 +63,7 @@
         <view class="floor-button">
             <wd-button block type="primary" size="large" @click="handleClear">清空</wd-button>
         </view>
+        <wd-gap safe-area-bottom height="0"></wd-gap>
     </view>
 </template>
 
@@ -71,7 +72,6 @@ import { ref, computed } from 'vue';
 import { fetchGetProduct } from '@/api';
 import { useAppStore } from '@/store';
 const appStore = useAppStore()
-
 type ScanProduct = Product & {
     count: number
 }
@@ -79,7 +79,7 @@ type ScanProduct = Product & {
 const products = ref<ScanProduct[]>([])
 const showPopup = ref<boolean>(false)
 const scanProduct = ref<Product>()
-const current = ref<number>(0)
+const currentSwiper = ref<number>(0)
 
 const totalPrice = computed(() => {
     if (products.value.length === 0) {
@@ -88,7 +88,6 @@ const totalPrice = computed(() => {
     return products.value.reduce((acc, cur) => acc + cur.price * cur.count, 0)
 })
 function handleCountChange({ value }: { value: number }, index: number) {
-    console.log(value, index)
     if (value === 0) {
         products.value.splice(index, 1)
     }
@@ -114,7 +113,7 @@ const handleError = (e: any) => {
 }
 const handlePopupClose = () => {
     showPopup.value = false
-    current.value = 0
+    currentSwiper.value = 0
 }
 
 const handlePopupConfirm = () => {
@@ -209,6 +208,7 @@ const handleScanCode = async (e: any) => {
             display: flex;
             gap: 20rpx;
             align-items: center;
+
 
             .info {
                 flex: 1;

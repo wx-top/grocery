@@ -1,7 +1,7 @@
 <template>
   <view class="management-container">
     <wd-grid clickable :column="3">
-      <wd-grid-item v-for="(item, index) in itemList" @itemclick="handleClick(item)" :key="index" :icon="item.icon"
+      <wd-grid-item v-for="(item, index) in itemList.filter(item => item.show)" @itemclick="handleClick(item)" :key="index" :icon="item.icon"
         :text="item.title" />
     </wd-grid>
     <wd-toast />
@@ -17,7 +17,7 @@ import { onShow } from "@dcloudio/uni-app";
 import { useToast } from "wot-design-uni"
 const toast = useToast()
 const appStore = useAppStore()
-const { tabbarIndex } = storeToRefs(appStore)
+const { tabbarIndex, isLogin } = storeToRefs(appStore)
 
 
 interface GridItem {
@@ -26,6 +26,7 @@ interface GridItem {
   path?: string;
   linkType?: "navigateTo" | "redirectTo" | "switchTab";
   function?: (item: GridItem) => void;
+  show: boolean;
 }
 
 const handleScanCodeSearch = (item: GridItem) => {
@@ -39,13 +40,10 @@ const handleScanCodeSearch = (item: GridItem) => {
             url: "/pages/product/detail?code=" + res.result
           })
         }, 1000)
-      } else {
-        toast.error('未识别有效商品条码')
       }
     },
     fail: (res) => {
       console.log(res)
-      toast.error('未识别有效商品条码')
     }
   })
 }
@@ -56,32 +54,38 @@ const itemList: GridItem[] = [
     icon: "search",
     path: "/pages/search/index",
     linkType: "navigateTo",
+    show: true,
   },
   {
     title: "扫码搜索",
     icon: "scan",
     function: handleScanCodeSearch,
+    show: true,
   },
   {
     title: "扫码计价",
     icon: "scan",
     path: "/pages/valuation/index",
     linkType: "navigateTo",
+    show: true,
   },
   {
     title: "新增商品",
     icon: "add",
-    path: "/pages/product/action?type=1",
+    path: "/pages/product/action?type=add",
+    show: isLogin.value,
   },
   {
     title: "分类管理",
     icon: "app",
     path: "/pages/category/index",
+    show: isLogin.value,
   },
   {
     title: "单位管理",
     icon: "app",
     path: "/pages/unit/index",
+    show: isLogin.value,
   },
 ];
 

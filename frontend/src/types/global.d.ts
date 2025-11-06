@@ -5,13 +5,35 @@ declare global {
         current?: number = 1,
         size?: number = 10
     }
-
+    
     interface Page<T> {
         current: number,
         pages: number,
         size: number,
         total: number,
         records: T[],
+    }
+    interface Admin {
+        id: number,
+        nickname: string,
+        username: string,
+        createAt: string,
+        updateAt: string,
+    }
+
+    interface LoginVO {
+        token: string,
+        admin: Admin,
+    }
+
+    interface AdminLoginRequest {
+        username: string,
+        password: string,
+    }
+
+    interface AdminUpdatePasswordRequest {
+        oldPwd: string,
+        newPwd: string,
     }
 
     interface ImageRequest {
@@ -75,5 +97,4 @@ declare global {
         params?: any;
         header?: Record<string, any>;
     }
-
 }

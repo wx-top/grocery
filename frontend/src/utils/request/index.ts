@@ -1,3 +1,5 @@
+import { useAppStore } from "@/store";
+
 // 全局请求封装
 // const base_url = 'http://192.168.43.34:8080'
 // const base_url = 'http://192.168.20.180:8080'
@@ -19,14 +21,15 @@ const request = <T = any>(params: RequestOptions): Promise<T> => {
         'Content-Type': 'application/json;charset=UTF-8',
         ...params.header
     }
-    // POST 默认使用 multipart/form-data（与后端约定）
-    // if (method === "POST") {
-    //     header['Content-Type'] = 'multipart/form-data';
-    // }
+    // 处理token
+    const token = uni.getStorageSync('token');
+    if (token) {
+        header['Token'] = token;
+    }
+    const appStore = useAppStore();
     return new Promise<T>((resolve, reject) => {
         uni.showLoading({
             title: '加载中...',
-            
         })
         uni.request({
             url: base_url + url,
@@ -36,29 +39,28 @@ const request = <T = any>(params: RequestOptions): Promise<T> => {
             timeout,
             success(response) {
                 const res = response
-                // 根据返回的状态码做出对应的操作
-                //获取成功
-                // console.log(res.statusCode);
                 if (res.statusCode == 200) {
                     const r = res.data as R<T>;
                     if (r.code == 200) {
                         resolve(r.data);
                     } else {
-                        uni.showToast({
-                            title: r.msg,
-                            duration: 2000,
-                        })
+                        // 业务错误，reject错误信息
                         reject(r);
                     }
-                } else {
+                } else if (res.statusCode == 401) {
                     uni.showToast({
-                        title: '请重试...',
-                        duration: 2000,
+                        title: '登录过期，请重新登录',
+                        icon: "error",
+                        duration: 2000
                     })
+                    appStore.setAdmin(null);
+                    uni.removeStorageSync('token');
+                    reject(res.data);
+                } else {
+                    reject(res.data);
                 }
             },
             fail(err) {
-                console.log(err)
                 if (err.errMsg.indexOf('request:fail') !== -1) {
                     uni.showToast({
                         title: '网络异常',
@@ -72,7 +74,6 @@ const request = <T = any>(params: RequestOptions): Promise<T> => {
                     })
                 }
                 reject(err);
-
             },
             complete() {
                 // 不管成功还是失败都会执行

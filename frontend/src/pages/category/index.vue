@@ -1,23 +1,23 @@
 <template>
   <view class="management-container">
-    <scroll-view class="scroll" scroll-y>
+    <scroll-view class="scroll-view" scroll-y>
       <wd-swipe-action v-for="item in categoryList" :key="item.id">
         <wd-cell :title="item.name" />
         <template #right>
           <view class="action">
-            <view class="button" style="background: #aba7a7;" @click="handleAction(0, item.id)">查看</view>
-            <view class="button" style="background: #007AFF;" @click="handleAction(2, item.id)">修改</view>
-            <view class="button" style="background: #ff0000;" @click="handleAction(3, item.id)">删除</view>
+            <view class="button" style="background: #aba7a7;" @click="handleAction('view', item.id)">查看</view>
+            <view class="button" style="background: #007AFF;" @click="handleAction('edit', item.id)">修改</view>
+            <view class="button" style="background: #ff0000;" @click="handleAction('delete', item.id)">删除</view>
           </view>
         </template>
       </wd-swipe-action>
     </scroll-view>
     <view class="floor-button">
-      <wd-button @click="handleAction(1)" block icon="add" type="primary" size="large">添加分类</wd-button>
+      <wd-button @click="handleAction('add')" block icon="add" type="primary" size="large">添加分类</wd-button>
     </view>
     <wd-message-box></wd-message-box>
     <wd-toast />
-    <MyTabbar />
+    <wd-gap safe-area-bottom height="0"></wd-gap>
   </view>
 </template>
 
@@ -33,13 +33,13 @@ const toast = useToast()
 
 const message = useMessage()
 
-const handleAction = async (type: number, id?: number) => {
+const handleAction = async (type: string, id?: number) => {
   console.log('handleAction', type, id)
-  if ([2, 3].includes(Number(type)) && !id) {
+  if (['edit', 'delete'].includes(type) && !id) {
     toast.error('请选择要操作的分类')
     return
   }
-  if (type === 3) {
+  if (type === 'delete') {
     // 删除
     message.confirm({
       title: '删除分类',
@@ -53,8 +53,12 @@ const handleAction = async (type: number, id?: number) => {
       await appStore.getCategoryList()
     })
   } else {
+    let url = `/pages/category/action?type=${type}`
+    if (['edit', 'view'].includes(type)) {
+      url += `&id=${id}`
+    }
     uni.navigateTo({
-      url: `/pages/category/action?type=${type}&id=${id}`
+      url: url
     })
   }
 }
@@ -67,20 +71,26 @@ const handleAction = async (type: number, id?: number) => {
   flex-direction: column;
   background: #f5f5f5;
 
-  .scroll {
+  .scroll-view {
     flex: 1;
+    overflow: hidden;
+
+    .action {
+      height: 100%;
+
+      .button {
+        display: inline-block;
+        padding: 0 11px;
+        height: 100%;
+        color: white;
+        line-height: 42px;
+      }
+    }
   }
 
-  .action {
-    height: 100%;
-  }
-
-  .button {
-    display: inline-block;
-    padding: 0 11px;
-    height: 100%;
-    color: white;
-    line-height: 42px;
+  .floor-button {
+    flex-shrink: 0;
+    padding: 12px;
   }
 }
 </style>

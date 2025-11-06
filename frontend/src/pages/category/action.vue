@@ -1,19 +1,17 @@
 <template>
     <view class="action-container">
         <wd-form ref="form" :model="model">
-            <wd-cell-group v-if="actionType !== 0" border>
+            <wd-cell-group v-if="actionType !== 'view'" border>
                 <wd-input label="分类名称" label-width="100px" prop="name" clearable v-model="model.name"
                     placeholder="请输入分类名称" :rules="[{ required: true, message: '请填写分类名称' }]" />
-                <wd-textarea label="分类介绍" label-width="100px" type="textarea" v-model="model.description"
-                    :maxlength="300" show-word-limit placeholder="请输入分类介绍" clearable prop="description" />
+                <wd-input label="分类描述" label-width="100px" prop="description" clearable v-model="model.description"
+                    placeholder="请输入分类描述" />
             </wd-cell-group>
             <wd-cell-group v-else border>
                 <wd-cell title="分类名称" :value="category?.name || '暂无'" />
-                <wd-cell title="分类介绍" :value="category?.description || '暂无'" />
-                <wd-cell title="创建时间" :value="category?.createAt || '暂无'" />
-                <wd-cell title="更新时间" :value="category?.updateAt || '暂无'" />
+                <wd-cell title="分类描述" :value="category?.description || '暂无'" />
             </wd-cell-group>
-            <view class="footer" v-if="actionType !== 0">
+            <view class="footer" v-if="actionType !== 'view'">
                 <wd-button type="primary" size="large" @click="handleSubmit" block>{{ title }}</wd-button>
             </view>
         </wd-form>
@@ -31,7 +29,7 @@ import { storeToRefs } from "pinia";
 const appStore = useAppStore()
 const { success: showSuccess } = useToast()
 const { categoryList } = storeToRefs(appStore)
-const actionType = ref<number>(0)
+const actionType = ref<string>('')
 const category = ref<Category>()
 const title = ref<string>('')
 type Model = Partial<Pick<Category, 'name' | 'description'>>
@@ -46,11 +44,11 @@ const handleSubmit = async () => {
         if (!r.valid) {
             return
         }
-        if (actionType.value === 1) {
+        if (actionType.value === 'add') {
             // 新增
             await fetchAddCategory(model)
             showSuccess('新增成功')
-        } else if (actionType.value === 2) {
+        } else if (actionType.value === 'edit') {
             // 修改
             await fetchUpdateCategory({
                 id: category.value!.id,
@@ -66,10 +64,12 @@ const handleSubmit = async () => {
     })
 }
 
-onLoad((option: any) => {
+onLoad(async (option: any) => {
     const { id, type } = option
-    actionType.value = Number(type)
-    title.value = actionType.value === 0 ? '查看分类' : (actionType.value === 1 ? '新增分类' : '修改分类')
+    console.log('id type', id, type)
+
+    actionType.value = type
+    title.value = actionType.value === 'view' ? '查看分类' : (actionType.value === 'add' ? '新增分类' : '修改分类')
     uni.setNavigationBarTitle({
         title: title.value
     });

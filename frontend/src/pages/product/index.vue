@@ -40,11 +40,13 @@
                   <template #prefix>
                     <text style="font-size: 23rpx">￥</text>
                   </template>
+                  <template #suffix>
+                    <text style="font-size: 30rpx"> / {{ appStore.getUnitById(product.unitId)?.name }}</text>
+                  </template>
                 </wd-text>
               </view>
             </view>
           </wd-cell-group>
-          <!-- <wd-gap bg-color="#FFFFFF"></wd-gap> -->
         </scroll-view>
       </view>
     </view>
@@ -70,7 +72,7 @@ const products = ref<Product[]>([])
 const active = ref<number>(0)
 const scrollTop = ref<number>(0)
 const current = ref<number>(1)
-const size = ref<number>(10)
+const size = ref<number>(20)
 const notMore = ref<boolean>(false)
 const appStore = useAppStore();
 
@@ -84,7 +86,6 @@ const categoriesWithProducts = computed(() => {
 });
 
 const clickProduct = (id: number) => {
-  console.log(id);
   uni.navigateTo({
     url: `/pages/product/detail?id=${id}`
   });
@@ -193,9 +194,7 @@ onShow(async () => {
 
   .wraper {
     display: flex;
-    height: calc(100vh - var(--window-top));
-    height: calc(100vh - var(--window-top) - constant(safe-area-inset-bottom));
-    height: calc(100vh - var(--window-top) - env(safe-area-inset-bottom));
+    height: 100%;
 
     .content {
       flex: 1;
@@ -207,22 +206,11 @@ onShow(async () => {
         height: 100%;
 
         .product-item {
+          height: 100%;
           padding: 20rpx;
           display: flex;
           gap: 20rpx;
-
-          .info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-          }
-        }
-
-        .product-item {
-          padding: 20rpx;
-          display: flex;
-          gap: 20rpx;
+          box-sizing: border-box;
 
           .info {
             flex: 1;

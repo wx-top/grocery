@@ -50,7 +50,7 @@ const rules = {
 }
 const appStore = useAppStore()
 const { categoryList, unitList } = storeToRefs(appStore)
-const actionType = ref<number>(0)
+const actionType = ref<string>('')
 const product = ref<Product>()
 
 type Model = Partial<Pick<Product, 'name' | 'description' | 'price' | 'code'>> & {
@@ -99,7 +99,7 @@ const handleSubmit = async () => {
                 }
             )
         }
-        if (actionType.value === 1) {
+        if (actionType.value === 'add') {
             // 新增
             await fetchAddProduct({
                 ...model,
@@ -107,7 +107,7 @@ const handleSubmit = async () => {
                 unitId: Number(model.unitId),
             })
             toast.success({ msg: '新增成功', duration: 2000 })
-        } else if (actionType.value === 2) {
+        } else if (actionType.value === 'edit') {
             // 修改
             await fetchUpdateProduct({
                 id: product.value!.id,
@@ -175,12 +175,12 @@ const scanCode = async () => {
 
 onLoad(async (option: any) => {
     const { id, type } = option
-    actionType.value = Number(type)
-    title.value = actionType.value === 1 ? '新增商品' : '修改商品'
+    actionType.value = type
+    title.value = actionType.value === 'add' ? '新增商品' : '修改商品'
     uni.setNavigationBarTitle({
         title: title.value
     });
-    if (actionType.value === 2) {
+    if (actionType.value === 'edit') {
         if (!id) {
             uni.showToast({
                 title: '请选择要操作的商品',

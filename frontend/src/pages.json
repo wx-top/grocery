@@ -59,6 +59,12 @@
       "style": {
         "navigationBarTitleText": "商品搜索"
       }
+    },
+    {
+      "path": "pages/admin/index",
+      "style": {
+        "navigationBarTitleText": "管理员认证"
+      }
     }
   ],
   "globalStyle": {

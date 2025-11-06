@@ -18,28 +18,30 @@
         <wd-cell title="商品编码" :value="product.code || '暂无'" />
         <wd-cell title="商品介绍" :value="product.description || '暂无'" />
       </wd-cell-group>
-      <view class="btn-list">
-        <wd-button ype="icon" @click="handleAction(2)" icon="edit-outline" block type="primary"
-          size="large">编辑商品</wd-button>
-        <wd-button ype="icon" @click="handleAction(3)" icon="delete" block type="error" size="large">删除商品</wd-button>
+      <view class="btn-list" v-if="isLogin">
+        <wd-button @click="handleAction('edit')" icon="edit-outline" block type="primary"
+          size="large">修改商品</wd-button>
+        <wd-button @click="handleAction('delete')" icon="delete" block type="error" size="large" v-if="isLogin">删除商品</wd-button>
       </view>
     </view>
     <wd-message-box />
     <wd-toast />
+    <wd-gap safe-area-bottom height="0"></wd-gap>
   </view>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { onLoad, onShow } from "@dcloudio/uni-app"
-import { useAppStore } from "@/store/modules/app";
+import { useAppStore } from "@/store";
 import { useToast } from "wot-design-uni"
 import { fetchDeleteProduct, fetchGetProduct } from "@/api"
-
+import { storeToRefs } from "pinia";
+const appStore = useAppStore()
+const { isLogin } = storeToRefs(appStore)
 const id = ref<string>('')
 const code = ref<string>('')
 const toast = useToast()
-const appStore = useAppStore();
 const product = ref<Product>();
 const category = ref<Category>();
 const unit = ref<Unit>();
@@ -89,12 +91,12 @@ onShow(async () => {
     }, 1000)
   }
 })
-const handleAction = (type: number) => {
-  if (type === 2) {
+const handleAction = (type: string) => {
+  if (type === 'edit') {
     uni.navigateTo({
       url: `/pages/product/action?type=${type}&id=${product.value!.id}`
     })
-  } else if (type === 3) {
+  } else if (type === 'delete') {
     uni.showModal({
       title: "确认删除",
       content: "确认删除商品吗？",

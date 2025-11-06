@@ -2,8 +2,7 @@
 import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
 import { useAppStore } from "@/store";
 const appStore = useAppStore();
-
-onLaunch(() => {
+onLaunch(async () => {
   console.log("App Launch");
   appStore.getUnitList();
   appStore.getCategoryList();
@@ -16,8 +15,4 @@ onHide(() => {
 });
 </script>
 <style lang="scss">
-page {
-  // height: 100%;
-  font-family: "San Francisco", Rotobo, arial, "PingFang SC", "Noto SansCJK", "Microsoft Yahei", sans-serif;
-}
 </style>
