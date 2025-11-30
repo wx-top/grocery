@@ -4,6 +4,11 @@ spring:
   jackson:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
+  servlet:
+    multipart:
+      max-file-size: 50MB        # 单个文件最大大小
+      max-request-size: 500MB    # 整个请求最大大小
+      enabled: true
 minio:
   endpoint: http://47.122.130.122:9000
   accessKey: wenxin
